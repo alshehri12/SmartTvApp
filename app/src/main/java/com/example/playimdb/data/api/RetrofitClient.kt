@@ -13,6 +13,7 @@ object RetrofitClient {
         val request = chain.request().newBuilder()
             .addHeader("Authorization", "Bearer ${Constants.TMDB_READ_ACCESS_TOKEN}")
             .addHeader("accept", "application/json")
+            .header("Accept-Encoding", "identity")
             .build()
         chain.proceed(request)
     }
