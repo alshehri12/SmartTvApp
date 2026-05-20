@@ -29,15 +29,16 @@ fun PlayerScreen(
     val url = "${Constants.PLAYIMDB_BASE_URL}$imdbId"
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     var customView by remember { mutableStateOf<View?>(null) }
+    var customViewCallback by remember { mutableStateOf<WebChromeClient.CustomViewCallback?>(null) }
 
     BackHandler {
-        val wv = webViewRef
-        val cv = customView
         when {
-            cv != null -> {
+            customView != null -> {
+                customViewCallback?.onCustomViewHidden()
                 customView = null
+                customViewCallback = null
             }
-            wv?.canGoBack() == true -> wv.goBack()
+            webViewRef?.canGoBack() == true -> webViewRef?.goBack()
             else -> onBackClick()
         }
     }
@@ -76,10 +77,13 @@ fun PlayerScreen(
                     webChromeClient = object : WebChromeClient() {
                         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                             customView = view
+                            customViewCallback = callback
                         }
 
                         override fun onHideCustomView() {
+                            customViewCallback?.onCustomViewHidden()
                             customView = null
+                            customViewCallback = null
                         }
                     }
                     webViewRef = this
@@ -88,5 +92,15 @@ fun PlayerScreen(
             },
             modifier = Modifier.fillMaxSize()
         )
+
+        // Fullscreen video overlay — shown when the site requests fullscreen playback
+        customView?.let { cv ->
+            AndroidView(
+                factory = { cv },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            )
+        }
     }
 }

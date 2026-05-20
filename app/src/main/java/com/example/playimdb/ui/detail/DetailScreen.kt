@@ -17,27 +17,23 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.example.playimdb.Constants
+import com.example.playimdb.ui.components.AppButton
+import com.example.playimdb.ui.components.AppOutlinedButton
 import com.example.playimdb.ui.theme.ColorBackground
 import com.example.playimdb.ui.theme.ColorOverlay
 import com.example.playimdb.ui.theme.ColorPrimary
@@ -51,7 +47,6 @@ fun DetailScreen(
     viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory(movieId))
 ) {
     val state by viewModel.state.collectAsState()
-    val playFocusRequester = remember { FocusRequester() }
 
     Box(
         modifier = Modifier
@@ -151,14 +146,9 @@ fun DetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        LaunchedEffect(movie) {
-                            if (movie.imdbId != null) playFocusRequester.requestFocus()
-                        }
-
-                        Button(
+                        AppButton(
                             onClick = { movie.imdbId?.let { onPlayClick(it) } },
-                            enabled = movie.imdbId != null,
-                            modifier = Modifier.focusRequester(playFocusRequester)
+                            enabled = movie.imdbId != null
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
@@ -172,7 +162,7 @@ fun DetailScreen(
                             )
                         }
 
-                        OutlinedButton(onClick = onBackClick) {
+                        AppOutlinedButton(onClick = onBackClick) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = null,
@@ -212,7 +202,7 @@ fun DetailScreen(
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                OutlinedButton(onClick = onBackClick) {
+                AppOutlinedButton(onClick = onBackClick) {
                     Text("Go Back", color = Color.White)
                 }
             }

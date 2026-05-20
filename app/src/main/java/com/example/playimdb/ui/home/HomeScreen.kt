@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -25,14 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.example.playimdb.data.model.Movie
+import com.example.playimdb.ui.components.AppButton
 import com.example.playimdb.ui.components.MovieCard
 import com.example.playimdb.ui.theme.ColorBackground
 import com.example.playimdb.ui.theme.ColorPrimary
@@ -118,7 +118,7 @@ private fun Header(onSearchClick: () -> Unit) {
             style = MaterialTheme.typography.headlineLarge,
             color = ColorPrimary
         )
-        Button(onClick = onSearchClick) {
+        AppButton(onClick = onSearchClick) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
@@ -182,7 +182,7 @@ private fun ErrorSection(message: String, onRetry: () -> Unit) {
             color = MaterialTheme.colorScheme.secondary
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onRetry) {
+        AppButton(onClick = onRetry) {
             Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.Black)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Retry", color = Color.Black)
