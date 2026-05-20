@@ -64,9 +64,9 @@ fun PlayerScreen(
                         allowFileAccess = true
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         userAgentString = "Mozilla/5.0 (Linux; Android 11; TV) AppleWebKit/537.36 Chrome/91.0.4472.120 Safari/537.36"
-                        // Prevent JavaScript from opening new windows / tabs
-                        javaScriptCanOpenWindowsAutomatically = false
-                        setSupportMultipleWindows(false)
+                        // Route window.open() and target="_blank" through onCreateWindow
+                        // so we can block them there without touching normal navigation
+                        setSupportMultipleWindows(true)
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -74,15 +74,9 @@ fun PlayerScreen(
                             view: WebView,
                             request: WebResourceRequest
                         ): Boolean {
-                            val host = request.url.host ?: return true
-                            return if (host.endsWith("playimdb.com")) {
-                                // Allow navigation within the playimdb.com domain
-                                view.loadUrl(request.url.toString())
-                                true
-                            } else {
-                                // Block everything else — ads, redirect popups, external sites
-                                true
-                            }
+                            // Allow all normal navigation so the video player loads correctly
+                            view.loadUrl(request.url.toString())
+                            return true
                         }
                     }
 
@@ -93,7 +87,8 @@ fun PlayerScreen(
                             isUserGesture: Boolean,
                             resultMsg: android.os.Message?
                         ): Boolean {
-                            // Block all popup / new-tab requests from the page
+                            // Block every popup / new-tab request (ad redirects on video click)
+                            // This is the ONLY entry point for window.open() and target="_blank"
                             return false
                         }
 
