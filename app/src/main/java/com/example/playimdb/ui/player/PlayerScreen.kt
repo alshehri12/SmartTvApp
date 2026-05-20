@@ -64,17 +64,39 @@ fun PlayerScreen(
                         allowFileAccess = true
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         userAgentString = "Mozilla/5.0 (Linux; Android 11; TV) AppleWebKit/537.36 Chrome/91.0.4472.120 Safari/537.36"
+                        // Prevent JavaScript from opening new windows / tabs
+                        javaScriptCanOpenWindowsAutomatically = false
+                        setSupportMultipleWindows(false)
                     }
+
                     webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(
                             view: WebView,
                             request: WebResourceRequest
                         ): Boolean {
-                            view.loadUrl(request.url.toString())
-                            return true
+                            val host = request.url.host ?: return true
+                            return if (host.endsWith("playimdb.com")) {
+                                // Allow navigation within the playimdb.com domain
+                                view.loadUrl(request.url.toString())
+                                true
+                            } else {
+                                // Block everything else — ads, redirect popups, external sites
+                                true
+                            }
                         }
                     }
+
                     webChromeClient = object : WebChromeClient() {
+                        override fun onCreateWindow(
+                            view: WebView,
+                            isDialog: Boolean,
+                            isUserGesture: Boolean,
+                            resultMsg: android.os.Message?
+                        ): Boolean {
+                            // Block all popup / new-tab requests from the page
+                            return false
+                        }
+
                         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                             customView = view
                             customViewCallback = callback
@@ -86,6 +108,7 @@ fun PlayerScreen(
                             customViewCallback = null
                         }
                     }
+
                     webViewRef = this
                     loadUrl(url)
                 }
@@ -93,7 +116,7 @@ fun PlayerScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Fullscreen video overlay — shown when the site requests fullscreen playback
+        // Fullscreen video overlay
         customView?.let { cv ->
             AndroidView(
                 factory = { cv },
